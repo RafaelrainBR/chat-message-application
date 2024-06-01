@@ -1,0 +1,17 @@
+root = true
+
+[*]
+insert_final_newline = true
+trim_trailing_whitespace = true
+max_line_length = 120
+
+[*.{java,kt,kts,xml,kt.spec,kts.spec}]
+charset = utf-8
+end_of_line = lf
+ktlint_function_naming_ignore_when_annotated_with = Composable
+
+[**/build/generated/**/*.kt]
+ktlint = disabled
+
+[*.{yml,yaml}]
+ij_continuation_indent_size = 2
