@@ -17,3 +17,5 @@ dependencyResolutionManagement {
 
 include(":backend")
 include(":client-compose")
+include(":common")
+include(":sdk-kotlin")

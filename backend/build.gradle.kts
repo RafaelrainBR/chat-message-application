@@ -6,6 +6,7 @@ plugins {
 
 dependencies {
     implementation(libs.bundles.ktor.server)
+    implementation(project(":common"))
 }
 
 application {

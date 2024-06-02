@@ -1,8 +1,7 @@
 package com.rafaelrain.chatmessage.backend.routes
 
-import com.rafaelrain.chatmessage.backend.routes.PacketType.JOINED
-import com.rafaelrain.chatmessage.backend.routes.PacketType.LEAVE
-import com.rafaelrain.chatmessage.backend.routes.PacketType.MESSAGE
+import com.rafaelrain.chatmessage.common.packet.ServerMessageSessionPacket
+import com.rafaelrain.chatmessage.common.packet.ServerMessageSessionPacketType
 import io.ktor.server.application.call
 import io.ktor.server.request.header
 import io.ktor.server.response.respond
@@ -24,13 +23,13 @@ data class Room(
     val name: String,
     val sessions: MutableList<MessageSession>,
 ) {
-    suspend fun broadcast(packet: SocketPacket) {
+    suspend fun broadcast(packet: ServerMessageSessionPacket) {
         sessions.forEach { session ->
             session.socketSession.sendSerialized(packet)
         }
     }
 
-    suspend fun removeSession(session: MessageSession) {
+    fun removeSession(session: MessageSession) {
         sessions.removeIf { it.name == session.name }
     }
 }
@@ -60,7 +59,8 @@ object Rooms {
         message: String,
     ) {
         val room = getRoomOrCreate(session.roomName)
-        val packet = SocketPacket(MESSAGE, room.name, session.name, message)
+        val packet =
+            ServerMessageSessionPacket(ServerMessageSessionPacketType.MESSAGE, room.name, session.name, message)
         room.broadcast(packet)
     }
 
@@ -68,7 +68,7 @@ object Rooms {
         val room = getRoomOrCreate(session.roomName)
         room.removeSession(session)
 
-        val packet = SocketPacket(LEAVE, room.name, session.name)
+        val packet = ServerMessageSessionPacket(ServerMessageSessionPacketType.LEAVE, room.name, session.name)
         room.broadcast(packet)
     }
 
@@ -76,7 +76,7 @@ object Rooms {
         room: Room,
         session: MessageSession,
     ) {
-        val packet = SocketPacket(JOINED, room.name, session.name)
+        val packet = ServerMessageSessionPacket(ServerMessageSessionPacketType.JOINED, room.name, session.name)
         room.broadcast(packet)
     }
 
@@ -134,17 +134,6 @@ fun Route.messageRoutes() {
         Rooms.handleLeave(session)
     }
 }
-
-@Serializable
-data class SocketPacket(
-    val type: PacketType,
-    val roomName: String,
-    val senderName: String,
-    val message: String? = null,
-)
-
-@Serializable
-enum class PacketType { JOINED, LEAVE, MESSAGE }
 
 @Serializable
 data class RoomDTO(
