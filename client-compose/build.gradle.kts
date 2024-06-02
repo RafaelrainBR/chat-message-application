@@ -1,11 +1,7 @@
 import com.android.build.api.dsl.ManagedVirtualDevice
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat.AppImage
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat.Deb
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat.Dmg
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat.Exe
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat.Msi
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat.Pkg
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat.Rpm
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -126,7 +122,7 @@ compose.desktop {
         mainClass = "MainKt"
 
         nativeDistributions {
-            targetFormats(AppImage, Deb, Rpm, Dmg, Pkg, Exe, Msi)
+            targetFormats(AppImage, Dmg, Exe)
             packageName = "com.rafaelrain.chatmessage.desktopApp"
             packageVersion = "1.0.0"
         }
