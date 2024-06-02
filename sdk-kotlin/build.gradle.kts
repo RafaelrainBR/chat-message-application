@@ -1,10 +1,12 @@
 plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.kotlin.serialization)
-    application
+//    alias(libs.plugins.android.application)
 }
 
 kotlin {
+//    androidTarget()
+
     jvm()
 
     sourceSets {
@@ -17,17 +19,12 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.arrow.core)
             implementation(libs.ktx.serialization.json)
-        }
-
-        jvmMain.dependencies {
             implementation(libs.ktor.client.cio)
         }
     }
 }
 
-application {
-    mainClass.set("MainKt")
-
-    val isDevelopment: Boolean = project.ext.has("development")
-    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
-}
+// android {
+//    namespace = "com.rafaelrain.chatmessage.clientcompose"
+//    compileSdk = 34
+// }

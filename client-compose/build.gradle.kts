@@ -47,13 +47,17 @@ kotlin {
             }
         }
         commonMain.dependencies {
+            implementation(project(":common"))
+            implementation(project(":sdk-kotlin"))
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.voyager.navigator)
+            implementation(libs.voyager.screenModel)
             implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.cio)
             implementation(libs.kotlinx.datetime)
             implementation(libs.androidx.ui.text.google.fonts)
         }
@@ -61,12 +65,12 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.uiTooling)
             implementation(libs.androidx.activityCompose)
-            implementation(libs.ktor.client.okhttp)
+            implementation(project(":sdk-kotlin"))
         }
 
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
-            implementation(libs.ktor.client.okhttp)
+            implementation(project(":sdk-kotlin"))
         }
     }
 }

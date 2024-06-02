@@ -33,10 +33,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key
@@ -45,7 +43,9 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.core.screen.Screen
+import com.rafaelrain.chatmessage.sdk.client.MessageSessionClient
 
 data class Message(
     val senderName: String,
@@ -53,15 +53,34 @@ data class Message(
     val isFromUser: Boolean = false,
 )
 
-class MessageRoomScreen : Screen {
+val client: MessageSessionClient by lazy {
+    ChatMessageSdk.create().messageSessionClient
+}
+
+class MessageRoomScreen(
+    private val name: String,
+    private val roomName: String,
+) : Screen {
     @Composable
     override fun Content() {
-        var isConnected by remember { mutableStateOf(false) }
+        val screenModel =
+            rememberScreenModel {
+                MessageRoomScreenModel(
+                    name = name,
+                    roomName = roomName,
+                    messageSessionClient = client,
+                )
+            }
+        val state by screenModel.state.collectAsState()
 
         ContentState(
-            roomName = "Sala 1",
-            isConnected = isConnected,
-            onClickConnect = { isConnected = true },
+            roomName = state.roomName,
+            isConnected = state.isConnected,
+            messages = state.messages,
+            message = state.message,
+            onClickConnect = { screenModel.connect() },
+            onChangeMessage = { message -> screenModel.setMessage(message) },
+            onClickSend = { screenModel.handleSend() },
         )
     }
 
@@ -69,19 +88,13 @@ class MessageRoomScreen : Screen {
     fun ContentState(
         roomName: String = "",
         isConnected: Boolean = false,
+        messages: List<Message> = emptyList(),
+        message: String = "",
         onClickConnect: () -> Unit = {},
+        onChangeMessage: (String) -> Unit = {},
+        onClickSend: () -> Unit = {},
     ) {
-        var messages by remember {
-            mutableStateOf(
-                MutableList(5) {
-                    Message("Rafael", "Mensagem de teste $it")
-                },
-            )
-        }
-
-        var message by remember { mutableStateOf("") }
         val lazyListState = rememberLazyListState(0)
-
         LaunchedEffect(messages) {
             lazyListState.animateScrollToItem(messages.size)
         }
@@ -98,13 +111,8 @@ class MessageRoomScreen : Screen {
                 Bottom(
                     isConnected = isConnected,
                     message = message,
-                    onChangeMessage = { message = it },
-                    onClickSend = {
-                        if (message.isNotBlank()) {
-                            messages = (messages + Message("Você", message, true)).toMutableList()
-                            message = ""
-                        }
-                    },
+                    onChangeMessage = onChangeMessage,
+                    onClickSend = onClickSend,
                 )
             },
         ) { innerPadding ->

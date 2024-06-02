@@ -1,5 +1,6 @@
 package com.rafaelrain.chatmessage.backend.routes
 
+import com.rafaelrain.chatmessage.common.packet.ClientMessageSessionPacket
 import com.rafaelrain.chatmessage.common.packet.ServerMessageSessionPacket
 import com.rafaelrain.chatmessage.common.packet.ServerMessageSessionPacketType
 import io.ktor.server.application.call
@@ -17,11 +18,20 @@ import io.ktor.websocket.close
 import io.ktor.websocket.readText
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import java.time.LocalDateTime
 import java.util.Collections
+
+data class MessageHistory(
+    val sender: String,
+    val message: String,
+    val sentAt: LocalDateTime,
+)
 
 data class Room(
     val name: String,
-    val sessions: MutableList<MessageSession>,
+    val sessions: MutableList<MessageSession> = mutableListOf(),
+    val messages: MutableList<MessageHistory> = mutableListOf(),
 ) {
     suspend fun broadcast(packet: ServerMessageSessionPacket) {
         sessions.forEach { session ->
@@ -31,6 +41,19 @@ data class Room(
 
     fun removeSession(session: MessageSession) {
         sessions.removeIf { it.name == session.name }
+    }
+
+    fun saveMessage(
+        session: MessageSession,
+        message: String,
+    ) {
+        messages.add(
+            MessageHistory(
+                sender = session.name,
+                message = message,
+                sentAt = LocalDateTime.now(),
+            ),
+        )
     }
 }
 
@@ -49,9 +72,21 @@ object Rooms {
         val room = getRoomOrCreate(session.roomName)
 
         room.removeSession(session)
-
         room.sessions.add(session)
         notifyJoin(room, session)
+
+        val sortedMessages = room.messages.sortedBy { it.sentAt }
+
+        sortedMessages.forEach { message ->
+            val packet =
+                ServerMessageSessionPacket(
+                    type = ServerMessageSessionPacketType.MESSAGE,
+                    roomName = room.name,
+                    senderName = message.sender,
+                    message = message.message,
+                )
+            session.socketSession.sendSerialized(packet)
+        }
     }
 
     suspend fun notifyMessage(
@@ -62,6 +97,7 @@ object Rooms {
         val packet =
             ServerMessageSessionPacket(ServerMessageSessionPacketType.MESSAGE, room.name, session.name, message)
         room.broadcast(packet)
+        room.saveMessage(session, message)
     }
 
     suspend fun handleLeave(session: MessageSession) {
@@ -117,8 +153,14 @@ fun Route.messageRoutes() {
         runCatching {
             for (frame in incoming) {
                 if (frame is Frame.Text) {
-                    val message = frame.readText()
-                    Rooms.notifyMessage(session, message)
+                    runCatching {
+                        val text = frame.readText()
+                        val packet = Json.decodeFromString<ClientMessageSessionPacket>(text)
+                        val message = packet.message
+                        if (!message.isNullOrBlank()) {
+                            Rooms.notifyMessage(session, message)
+                        }
+                    }.onFailure { it.printStackTrace() }
                 } else if (frame is Frame.Close) {
                     Rooms.handleLeave(session)
                 }

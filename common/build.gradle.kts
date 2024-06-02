@@ -1,9 +1,11 @@
 plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.kotlin.serialization)
+//    alias(libs.plugins.android.application)
 }
 
 kotlin {
+//    androidTarget()
     jvm()
 
     sourceSets {
@@ -14,3 +16,8 @@ kotlin {
         }
     }
 }
+
+// android {
+//    namespace = "com.rafaelrain.chatmessage.clientcompose"
+//    compileSdk = 34
+// }
