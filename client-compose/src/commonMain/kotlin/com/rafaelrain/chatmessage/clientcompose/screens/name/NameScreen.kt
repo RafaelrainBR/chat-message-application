@@ -34,26 +34,26 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import com.rafaelrain.chatmessage.clientcompose.screens.messageroom.MessageRoomScreen
+import com.rafaelrain.chatmessage.clientcompose.screens.rooms.RoomsScreen
+import com.rafaelrain.chatmessage.sdk.ChatMessageSdk
 
-class NameScreen : Screen {
+class NameScreen(
+    private val sdk: ChatMessageSdk,
+) : Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
 
         var name by remember { mutableStateOf("") }
-        var roomName by remember { mutableStateOf("") }
 
-        val isSendButtonEnabled = name.isNotBlank() && roomName.isNotBlank()
+        val isSendButtonEnabled = name.isNotBlank()
 
         ContentState(
             name = name,
-            roomName = roomName,
             isSendButtonEnabled = isSendButtonEnabled,
             onChangeName = { name = it },
-            onChangeRoomName = { roomName = it },
             onClickSend = {
-                navigator.push(MessageRoomScreen(name = name, roomName = roomName))
+                navigator.push(RoomsScreen(sdk = sdk, name = name))
             },
         )
     }
@@ -61,10 +61,8 @@ class NameScreen : Screen {
     @Composable
     fun ContentState(
         name: String = "",
-        roomName: String = "",
         isSendButtonEnabled: Boolean = false,
         onChangeName: (String) -> Unit = {},
-        onChangeRoomName: (String) -> Unit = {},
         onClickSend: () -> Unit = {},
     ) {
         Scaffold(
@@ -72,10 +70,8 @@ class NameScreen : Screen {
         ) { innerPadding ->
             Body(
                 name = name,
-                roomName = roomName,
                 isSendButtonEnabled = isSendButtonEnabled,
                 onChangeName = onChangeName,
-                onChangeRoomName = onChangeRoomName,
                 onClickSend = onClickSend,
                 innerPadding = innerPadding,
             )
@@ -98,10 +94,8 @@ class NameScreen : Screen {
     @Composable
     private fun Body(
         name: String = "",
-        roomName: String = "",
         isSendButtonEnabled: Boolean = false,
         onChangeName: (String) -> Unit = {},
-        onChangeRoomName: (String) -> Unit = {},
         onClickSend: () -> Unit = {},
         innerPadding: PaddingValues = PaddingValues(),
     ) {
@@ -114,21 +108,15 @@ class NameScreen : Screen {
                     .background(MaterialTheme.colorScheme.primaryContainer)
                     .fillMaxSize(),
         ) {
-            val focusRequester = FocusRequester()
-
             CustomTextInput(
                 label = "Nome",
                 value = name,
                 onChangeValue = onChangeName,
-                onClickSend = { focusRequester.requestFocus() },
-            )
-
-            CustomTextInput(
-                label = "Sala",
-                value = roomName,
-                onChangeValue = onChangeRoomName,
-                onClickSend = onClickSend,
-                focusRequester = focusRequester,
+                onClickSend = {
+                    if (isSendButtonEnabled) {
+                        onClickSend()
+                    }
+                },
             )
 
             ElevatedButton(onClick = onClickSend, enabled = isSendButtonEnabled) {

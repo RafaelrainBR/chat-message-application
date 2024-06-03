@@ -32,6 +32,7 @@ data class Room(
     val name: String,
     val sessions: MutableList<MessageSession> = mutableListOf(),
     val messages: MutableList<MessageHistory> = mutableListOf(),
+    val createdAt: LocalDateTime = LocalDateTime.now(),
 ) {
     suspend fun broadcast(packet: ServerMessageSessionPacket) {
         sessions.forEach { session ->
@@ -66,7 +67,7 @@ data class MessageSession(
 object Rooms {
     private val storage = Collections.synchronizedMap<String, Room>(HashMap())
 
-    fun getRooms(): List<RoomDTO> = storage.values.map { RoomDTO.fromRoom(it) }
+    fun getRooms(): List<RoomDTO> = storage.values.sortedByDescending { it.createdAt }.map { RoomDTO.fromRoom(it) }
 
     suspend fun addNewSession(session: MessageSession) {
         val room = getRoomOrCreate(session.roomName)
@@ -201,6 +202,7 @@ data class RoomDTO(
     val name: String,
     val length: Int,
     val users: List<String>,
+    val createdAt: String,
 ) {
     companion object {
         fun fromRoom(room: Room): RoomDTO {
@@ -209,6 +211,7 @@ data class RoomDTO(
                 name = room.name,
                 length = users.size,
                 users = users,
+                createdAt = room.createdAt.toString(),
             )
         }
     }

@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CardDefaults
@@ -23,10 +24,10 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
@@ -45,13 +46,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.core.screen.Screen
-import com.rafaelrain.chatmessage.sdk.client.MessageSessionClient
-
-val client: MessageSessionClient by lazy {
-    ChatMessageSdk.create().messageSessionClient
-}
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
+import com.rafaelrain.chatmessage.sdk.ChatMessageSdk
 
 class MessageRoomScreen(
+    private val sdk: ChatMessageSdk,
     private val name: String,
     private val roomName: String,
 ) : Screen {
@@ -62,17 +62,20 @@ class MessageRoomScreen(
                 MessageRoomScreenModel(
                     name = name,
                     roomName = roomName,
-                    messageSessionClient = client,
+                    messageSessionClient = sdk.messageSessionClient,
                 )
             }
         val state by screenModel.state.collectAsState()
+
+        LaunchedEffect(state.messageSession) {
+            screenModel.connect()
+        }
 
         ContentState(
             roomName = state.roomName,
             isConnected = state.isConnected,
             messages = state.messages,
             message = state.message,
-            onClickConnect = { screenModel.connect() },
             onChangeMessage = { message -> screenModel.setMessage(message) },
             onClickSend = { screenModel.handleSend() },
         )
@@ -84,7 +87,6 @@ class MessageRoomScreen(
         isConnected: Boolean = false,
         messages: List<Message> = emptyList(),
         message: String = "",
-        onClickConnect: () -> Unit = {},
         onChangeMessage: (String) -> Unit = {},
         onClickSend: () -> Unit = {},
     ) {
@@ -95,11 +97,7 @@ class MessageRoomScreen(
 
         Scaffold(
             topBar = {
-                Header(
-                    roomName = roomName,
-                    isConnected = isConnected,
-                    onClickConnect = onClickConnect,
-                )
+                Header(roomName = roomName)
             },
             bottomBar = {
                 Bottom(
@@ -116,11 +114,8 @@ class MessageRoomScreen(
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun Header(
-        roomName: String = "",
-        isConnected: Boolean = false,
-        onClickConnect: () -> Unit = {},
-    ) {
+    private fun Header(roomName: String = "") {
+        val navigator = LocalNavigator.currentOrThrow
         TopAppBar(
             colors =
                 TopAppBarDefaults.topAppBarColors(
@@ -128,12 +123,9 @@ class MessageRoomScreen(
                     titleContentColor = MaterialTheme.colorScheme.primary,
                 ),
             title = { Text(roomName, style = MaterialTheme.typography.titleLarge) },
-            actions = {
-                TextButton(
-                    onClick = onClickConnect,
-                    enabled = !isConnected,
-                ) {
-                    Text("Conectar", style = MaterialTheme.typography.titleSmall)
+            navigationIcon = {
+                IconButton(onClick = { navigator.pop() }) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar")
                 }
             },
         )

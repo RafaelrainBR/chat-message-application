@@ -17,6 +17,9 @@ class MessageRoomScreenModel(
 ) : StateScreenModel<MessageRoomScreenState>(MessageRoomScreenState(name = name, roomName = roomName)) {
     fun connect() =
         screenModelScope.launch {
+            if (state.value.messageSession != null) {
+                return@launch
+            }
             val session =
                 messageSessionClient.createSession(
                     createSessionRequest = CreateSessionRequest(name = name, roomName = roomName),

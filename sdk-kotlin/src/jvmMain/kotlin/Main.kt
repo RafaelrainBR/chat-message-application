@@ -1,5 +1,6 @@
 import com.rafaelrain.chatmessage.common.packet.ClientMessageSessionPacket
 import com.rafaelrain.chatmessage.common.packet.ClientMessageSessionPacketType
+import com.rafaelrain.chatmessage.sdk.ChatMessageSdk
 import com.rafaelrain.chatmessage.sdk.client.CreateSessionRequest
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -11,7 +12,7 @@ import java.util.concurrent.Executors
 import kotlin.time.Duration.Companion.seconds
 
 suspend fun main() {
-    val sdk = ChatMessageSdk.create()
+    val sdk = ChatMessageSdk.create(host = "0.tcp.sa.ngrok.io", port = 15345)
 
     val coroutineScope =
         CoroutineScope(Executors.newFixedThreadPool(6).asCoroutineDispatcher() + SupervisorJob() + exceptionHandler)

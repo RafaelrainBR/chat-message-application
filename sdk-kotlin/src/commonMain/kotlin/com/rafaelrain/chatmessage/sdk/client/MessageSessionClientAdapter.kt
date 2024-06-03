@@ -17,6 +17,8 @@ import kotlinx.serialization.json.Json
 
 class MessageSessionClientAdapter(
     private val httpClient: HttpClient,
+    private val host: String,
+    private val port: Int,
 ) : MessageSessionClient {
     override fun createSession(
         createSessionRequest: CreateSessionRequest,
@@ -26,7 +28,7 @@ class MessageSessionClientAdapter(
 
         coroutineScope.launch {
             val websocketSession =
-                httpClient.webSocketSession(host = "0.tcp.sa.ngrok.io", port = 15345, path = "/messages") {
+                httpClient.webSocketSession(host = host, port = port, path = "/messages") {
                     header("Name", createSessionRequest.name)
                     header("Room", createSessionRequest.roomName)
                 }
