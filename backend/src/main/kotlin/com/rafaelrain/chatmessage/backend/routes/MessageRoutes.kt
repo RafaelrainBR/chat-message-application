@@ -84,6 +84,7 @@ object Rooms {
                     roomName = room.name,
                     senderName = message.sender,
                     message = message.message,
+                    sentAt = LocalDateTime.now().toString(),
                 )
             session.socketSession.sendSerialized(packet)
         }
@@ -95,7 +96,13 @@ object Rooms {
     ) {
         val room = getRoomOrCreate(session.roomName)
         val packet =
-            ServerMessageSessionPacket(ServerMessageSessionPacketType.MESSAGE, room.name, session.name, message)
+            ServerMessageSessionPacket(
+                ServerMessageSessionPacketType.MESSAGE,
+                room.name,
+                session.name,
+                message,
+                LocalDateTime.now().toString(),
+            )
         room.broadcast(packet)
         room.saveMessage(session, message)
     }
@@ -104,7 +111,13 @@ object Rooms {
         val room = getRoomOrCreate(session.roomName)
         room.removeSession(session)
 
-        val packet = ServerMessageSessionPacket(ServerMessageSessionPacketType.LEAVE, room.name, session.name)
+        val packet =
+            ServerMessageSessionPacket(
+                ServerMessageSessionPacketType.LEAVE,
+                room.name,
+                session.name,
+                LocalDateTime.now().toString(),
+            )
         room.broadcast(packet)
     }
 
@@ -112,7 +125,13 @@ object Rooms {
         room: Room,
         session: MessageSession,
     ) {
-        val packet = ServerMessageSessionPacket(ServerMessageSessionPacketType.JOINED, room.name, session.name)
+        val packet =
+            ServerMessageSessionPacket(
+                ServerMessageSessionPacketType.JOINED,
+                room.name,
+                session.name,
+                LocalDateTime.now().toString(),
+            )
         room.broadcast(packet)
     }
 

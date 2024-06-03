@@ -47,12 +47,6 @@ import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.core.screen.Screen
 import com.rafaelrain.chatmessage.sdk.client.MessageSessionClient
 
-data class Message(
-    val senderName: String,
-    val message: String,
-    val isFromUser: Boolean = false,
-)
-
 val client: MessageSessionClient by lazy {
     ChatMessageSdk.create().messageSessionClient
 }
@@ -239,7 +233,23 @@ class MessageRoomScreen(
                     verticalArrangement = Arrangement.SpaceAround,
                 ) {
                     Text(message.senderName, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    Text(message.message, style = MaterialTheme.typography.bodyMedium)
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalAlignment = Alignment.Bottom,
+                    ) {
+                        Text(message.message, style = MaterialTheme.typography.bodyMedium)
+                        val hour =
+                            message.sentAt?.let { sentAt ->
+                                "${sentAt.hour.toString().padStart(
+                                    2,
+                                    '0',
+                                )}:${sentAt.minute.toString().padStart(2, '0')}"
+                            }
+                        if (hour != null) {
+                            Text(hour, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+                        }
+                    }
                 }
             }
         }

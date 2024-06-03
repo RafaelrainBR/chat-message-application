@@ -8,6 +8,7 @@ data class ServerMessageSessionPacket(
     val roomName: String,
     val senderName: String,
     val message: String? = null,
+    val sentAt: String? = null,
 )
 
 @Serializable

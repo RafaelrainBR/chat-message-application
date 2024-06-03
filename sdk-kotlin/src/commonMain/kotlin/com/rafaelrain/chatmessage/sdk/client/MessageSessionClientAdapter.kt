@@ -26,7 +26,7 @@ class MessageSessionClientAdapter(
 
         coroutineScope.launch {
             val websocketSession =
-                httpClient.webSocketSession(host = "0.tcp.sa.ngrok.io", port = 14907, path = "/messages") {
+                httpClient.webSocketSession(host = "0.tcp.sa.ngrok.io", port = 15345, path = "/messages") {
                     header("Name", createSessionRequest.name)
                     header("Room", createSessionRequest.roomName)
                 }
