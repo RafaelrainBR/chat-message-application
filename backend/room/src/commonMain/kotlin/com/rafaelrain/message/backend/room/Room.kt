@@ -80,6 +80,8 @@ data class Room<C : PacketClient>(
         session: MessageSession<C>,
         message: String,
     ) {
+        if (message.isBlank()) return
+
         val chatMessage = ChatMessage(sender = session.name, message = message, roomName = this.name)
 
         broadcastPacket(chatMessage.toServerPacket())
