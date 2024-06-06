@@ -8,7 +8,6 @@ import com.rafaelrain.chatmessage.common.packet.ServerMessageSessionPacketType
 import com.rafaelrain.chatmessage.sdk.client.CreateSessionRequest
 import com.rafaelrain.chatmessage.sdk.client.MessageSessionClient
 import kotlinx.coroutines.launch
-import kotlinx.datetime.LocalDateTime
 
 class MessageRoomScreenModel(
     private val messageSessionClient: MessageSessionClient,
@@ -56,7 +55,7 @@ class MessageRoomScreenModel(
                             senderName = packet.senderName,
                             message = packet.message.orEmpty(),
                             isFromUser = packet.senderName == name,
-                            sentAt = packet.sentAt?.let { sentAt -> LocalDateTime.parse(sentAt) },
+                            sentAt = packet.sentAt,
                         )
                     mutableState.emit(state.value.copy(messages = (state.value.messages + message)))
                 }

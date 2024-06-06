@@ -5,7 +5,7 @@
     <application
             android:name=".AndroidApp"
             android:icon="@android:drawable/ic_menu_compass"
-            android:label="Multiplatform App"
+            android:label="Konversas"
             android:theme="@android:style/Theme.Material.NoActionBar">
         <activity
                 android:name=".AppActivity"

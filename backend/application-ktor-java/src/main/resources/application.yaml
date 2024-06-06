@@ -1,0 +1,6 @@
+ktor:
+  application:
+    modules:
+      - com.rafaelrain.message.backend.application.ktor.MainKt.module
+  deployment:
+    port: 8080

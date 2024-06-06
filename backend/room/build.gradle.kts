@@ -9,9 +9,9 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.kotlinx.datetime)
-            implementation(libs.arrow.core)
+            implementation(projects.common)
             implementation(libs.ktx.serialization.json)
+            implementation(libs.kotlinx.datetime)
         }
     }
 }

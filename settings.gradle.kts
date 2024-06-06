@@ -1,3 +1,4 @@
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "chat-message-application"
 
 pluginManagement {
@@ -12,10 +13,14 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        mavenLocal()
     }
 }
 
-include(":backend")
+include(":backend:application-ktor")
+include(":backend:application-ktor-java")
+include(":backend:room")
+include(":backend:room-ktor")
 include(":client-compose")
 include(":common")
 include(":sdk-kotlin")

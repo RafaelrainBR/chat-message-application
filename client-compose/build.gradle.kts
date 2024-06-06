@@ -84,7 +84,7 @@ android {
         targetSdk = 34
 
         applicationId = "com.rafaelrain.chatmessage.clientcompose.androidApp"
-        versionCode = androidVersionCode.toInt()
+        versionCode = 1
         versionName = androidVersionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -119,6 +119,7 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.11"
     }
+    buildToolsVersion = "34.0.0"
 }
 
 compose.desktop {
