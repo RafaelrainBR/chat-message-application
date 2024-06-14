@@ -1,0 +1,8 @@
+services:
+  application:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: chat-message-aplication-ktor-native
+    ports:
+      - 8080:8080

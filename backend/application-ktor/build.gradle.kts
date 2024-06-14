@@ -27,6 +27,8 @@ kotlin {
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.koin.core)
             implementation(libs.koin.ktor)
+            implementation(libs.suspendapp)
+            implementation(libs.suspendapp.ktor)
         }
     }
 }

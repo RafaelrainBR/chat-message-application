@@ -17,22 +17,23 @@ class ChatMessageSdk private constructor(
 ) {
     companion object {
         fun create(
-            host: String,
-            port: Int,
+            apiUrl: String,
+            webSocketHost: String,
+            webSocketPort: Int,
         ): ChatMessageSdk {
             val httpClient = createHttpClient()
 
             val messageSessionClient =
                 MessageSessionClientAdapter(
                     httpClient = httpClient,
-                    host = host,
-                    port = port,
+                    host = webSocketHost,
+                    port = webSocketPort,
                 )
 
             val roomsClient =
                 RoomsClientAdapter(
                     httpClient = httpClient,
-                    baseUrl = "http://$host:$port",
+                    baseUrl = apiUrl,
                 )
             return ChatMessageSdk(messageSessionClient, roomsClient)
         }

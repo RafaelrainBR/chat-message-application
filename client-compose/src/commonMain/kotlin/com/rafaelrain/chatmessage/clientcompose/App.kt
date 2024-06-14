@@ -9,7 +9,12 @@ import com.rafaelrain.chatmessage.sdk.ChatMessageSdk
 @Composable
 fun App() =
     AppTheme {
-        val sdk = ChatMessageSdk.create(host = "0.tcp.sa.ngrok.io", port = 10962)
+        val sdk =
+            ChatMessageSdk.create(
+                apiUrl = "https://application-ktor.fly.dev",
+                webSocketHost = "application-ktor.fly.dev",
+                webSocketPort = 80,
+            )
 
         Navigator(NameScreen(sdk))
     }
