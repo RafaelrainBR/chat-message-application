@@ -8,6 +8,10 @@ kotlin {
 //    androidTarget()
 
     jvm()
+    js {
+        browser()
+        binaries.executable()
+    }
 
     sourceSets {
         commonMain.dependencies {
@@ -19,6 +23,13 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.arrow.core)
             implementation(libs.ktx.serialization.json)
+        }
+
+        jsMain.dependencies {
+            implementation(libs.ktor.client.js)
+        }
+
+        jvmMain.dependencies {
             implementation(libs.ktor.client.cio)
         }
     }

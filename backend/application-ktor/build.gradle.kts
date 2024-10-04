@@ -5,13 +5,13 @@ plugins {
 
 kotlin {
     jvm()
-    linuxX64 {
-        binaries {
-            executable {
-                entryPoint = "com.rafaelrain.message.backend.application.ktor.main"
-            }
-        }
-    }
+//    linuxX64 {
+//        binaries {
+//            executable {
+//                entryPoint = "com.rafaelrain.message.backend.application.ktor.main"
+//            }
+//        }
+//    }
 
     sourceSets {
         commonMain.dependencies {
@@ -24,6 +24,7 @@ kotlin {
             implementation(libs.ktor.server.cio)
             implementation(libs.ktor.server.content.negotiation)
             implementation(libs.ktor.server.websockets)
+            implementation(libs.ktor.server.cors)
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.koin.core)
             implementation(libs.koin.ktor)

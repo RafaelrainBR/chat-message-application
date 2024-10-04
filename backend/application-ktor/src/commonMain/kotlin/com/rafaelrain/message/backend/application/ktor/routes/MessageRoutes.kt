@@ -11,7 +11,6 @@ import com.rafaelrain.message.backend.room.connection.impl.KtorWebSocketPacketCl
 import com.rafaelrain.message.backend.room.session.MessageSession
 import com.rafaelrain.message.backend.room.storage.RoomStorage
 import io.ktor.server.application.call
-import io.ktor.server.request.header
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
@@ -66,8 +65,9 @@ private fun MessageSession.Companion.fromWebSocketSession(
     session: WebSocketServerSession,
 ): Either<String, MessageSession<KtorWebSocketPacketClient>> {
     return either {
-        val userName = ensureNotNull(session.call.request.header("Name")) { "Name header not found" }
-        val roomName = ensureNotNull(session.call.request.header("Room")) { "Name header not found" }
+        val queryParameters = session.call.request.queryParameters
+        val userName = ensureNotNull(queryParameters["name"]) { "Name query not found" }
+        val roomName = ensureNotNull(queryParameters["room"]) { "Room query not found" }
 
         MessageSession(
             packetClient = KtorWebSocketPacketClient(session),

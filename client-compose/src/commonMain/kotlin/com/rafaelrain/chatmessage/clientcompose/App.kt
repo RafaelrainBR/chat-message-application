@@ -13,7 +13,7 @@ fun App() =
             ChatMessageSdk.create(
                 apiUrl = "https://application-ktor.fly.dev",
                 webSocketHost = "application-ktor.fly.dev",
-                webSocketPort = 80,
+                webSocketPort = 443,
             )
 
         Navigator(NameScreen(sdk))

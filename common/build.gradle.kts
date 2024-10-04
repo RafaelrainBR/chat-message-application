@@ -6,6 +6,10 @@ plugins {
 kotlin {
     jvm()
     linuxX64()
+    js {
+        browser()
+        binaries.executable()
+    }
 
     sourceSets {
         commonMain.dependencies {
