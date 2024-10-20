@@ -1,4 +1,4 @@
-use crate::server::dto::room::RoomDTO;
+use crate::server::dto::RoomDTO;
 use crate::server::error::ServerError;
 use crate::server::state::AppState;
 use axum::extract::State;

@@ -5,8 +5,8 @@ use anyhow::Result;
 use tokio::sync::Mutex;
 
 pub struct MessageSession {
-    name: String,
-    room_name: String,
+    pub name: String,
+    pub room_name: String,
     packet_client: Mutex<Box<dyn PacketClient + Send + Sync>>,
 }
 
@@ -32,13 +32,5 @@ impl MessageSession {
         packet_client
             .send_serialized(Packet::ServerPacket(packet))
             .await
-    }
-
-    pub fn name(&self) -> String {
-        self.name.clone()
-    }
-
-    pub fn room_name(&self) -> String {
-        self.room_name.clone()
     }
 }

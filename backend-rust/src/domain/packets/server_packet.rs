@@ -3,11 +3,11 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Deserialize, Debug)]
 pub struct ServerPacket {
-    packet_type: ServerPacketType,
-    room_name: String,
-    sender_name: String,
-    message: Option<String>,
-    sent_at: Zoned,
+    pub packet_type: ServerPacketType,
+    pub room_name: String,
+    pub sender_name: String,
+    pub message: Option<String>,
+    pub sent_at: Zoned,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
@@ -60,25 +60,5 @@ impl ServerPacket {
             message: None,
             sent_at,
         }
-    }
-
-    pub fn packet_type(&self) -> ServerPacketType {
-        self.packet_type.clone()
-    }
-
-    pub fn room_name(&self) -> String {
-        self.room_name.clone()
-    }
-
-    pub fn sender_name(&self) -> String {
-        self.sender_name.clone()
-    }
-
-    pub fn message(&self) -> Option<String> {
-        self.message.clone()
-    }
-
-    pub fn sent_at(&self) -> Zoned {
-        self.sent_at.clone()
     }
 }

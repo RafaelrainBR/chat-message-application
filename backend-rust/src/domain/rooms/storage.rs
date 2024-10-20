@@ -28,10 +28,10 @@ pub struct RoomData {
 impl From<&Room> for RoomData {
     fn from(value: &Room) -> Self {
         RoomData {
-            name: value.name().to_string(),
+            name: value.name.to_string(),
             session_count: value.session_count(),
             user_names: value.user_names(),
-            created_at: value.created_at().clone(),
+            created_at: value.created_at.clone(),
         }
     }
 }

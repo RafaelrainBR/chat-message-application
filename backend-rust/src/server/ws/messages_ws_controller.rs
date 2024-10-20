@@ -1,15 +1,14 @@
-use crate::domain::packets::{ClientPacket, Packet, ServerPacket, ServerPacketType};
+use crate::domain::packets::{ClientPacket, Packet};
 use crate::domain::rooms::MessageSession;
 use crate::server::adapters::AxumWSPacketClient;
-use crate::server::dto::ClientPacketDTO;
+use crate::server::dto::{ClientPacketDTO, ServerPacketDTO};
 use crate::server::state::AppState;
 use axum::body::Body;
 use axum::debug_handler;
 use axum::extract::ws::{Message, WebSocket};
 use axum::extract::{Query, State, WebSocketUpgrade};
 use axum::http::Response;
-use jiff::civil::DateTime;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use std::sync::Arc;
 use tokio::sync::{mpsc, Mutex};
 
@@ -109,27 +108,4 @@ async fn handle_socket(state: Arc<AppState>, mut ws: WebSocket, query: MessagesQ
     });
 
     ()
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ServerPacketDTO {
-    #[serde(rename = "type")]
-    packet_type: ServerPacketType,
-    room_name: String,
-    sender_name: String,
-    message: Option<String>,
-    sent_at: DateTime,
-}
-
-impl From<ServerPacket> for ServerPacketDTO {
-    fn from(value: ServerPacket) -> Self {
-        Self {
-            packet_type: value.packet_type(),
-            room_name: value.room_name(),
-            sender_name: value.sender_name(),
-            message: value.message(),
-            sent_at: value.sent_at().datetime(),
-        }
-    }
 }

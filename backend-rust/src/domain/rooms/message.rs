@@ -1,9 +1,9 @@
 #[derive(Clone)]
 pub struct ChatMessage {
-    sender: String,
-    message: String,
-    room_name: String,
-    sent_at: jiff::Zoned,
+    pub sender: String,
+    pub message: String,
+    pub room_name: String,
+    pub sent_at: jiff::Zoned,
 }
 
 impl ChatMessage {
@@ -19,21 +19,5 @@ impl ChatMessage {
             room_name,
             sent_at,
         }
-    }
-
-    pub fn sender(&self) -> &String {
-        &self.sender
-    }
-
-    pub fn message(&self) -> &String {
-        &self.message
-    }
-
-    pub fn room_name(&self) -> &String {
-        &self.room_name
-    }
-
-    pub fn sent_at(&self) -> &jiff::Zoned {
-        &self.sent_at
     }
 }

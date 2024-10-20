@@ -39,7 +39,7 @@ impl RoomStorage for RoomMemoryStorage {
     async fn add_new_session(&self, message_session: MessageSession) -> Result<()> {
         let mut rooms = self.rooms.lock().await;
 
-        let room_name = message_session.room_name().to_string();
+        let room_name = message_session.room_name.to_string();
         let room = rooms
             .entry(room_name.clone())
             .or_insert(Room::new(room_name));

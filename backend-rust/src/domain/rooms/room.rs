@@ -8,10 +8,10 @@ use jiff::Zoned;
 use std::collections::HashMap;
 
 pub struct Room {
-    name: String,
-    sessions: HashMap<String, MessageSession>,
-    messages: Vec<ChatMessage>,
-    created_at: Zoned,
+    pub name: String,
+    pub sessions: HashMap<String, MessageSession>,
+    pub messages: Vec<ChatMessage>,
+    pub created_at: Zoned,
 }
 
 impl Room {
@@ -25,12 +25,12 @@ impl Room {
     }
 
     pub async fn add_new_session(&mut self, mut session: MessageSession) -> Result<()> {
-        self.sessions.remove(&session.name());
+        self.sessions.remove(&session.name);
 
         self.notify_join(&session).await?;
         self.send_message_history(&mut session).await?;
 
-        self.sessions.insert(session.name(), session);
+        self.sessions.insert(session.name.clone(), session);
 
         Ok(())
     }
@@ -88,7 +88,7 @@ impl Room {
                 .unwrap_or_else(|err| {
                     tracing::trace!(
                         "Error sending packet for session {}: {:?}",
-                        session.name(),
+                        session.name,
                         err
                     );
                 });
@@ -105,7 +105,7 @@ impl Room {
         match message_session.send_packet(server_packet).await {
             Ok(_) => Ok(()),
             Err(_) => {
-                self.handle_leave(message_session.name()).await?;
+                self.handle_leave(message_session.name.clone()).await?;
                 Ok(())
             }
         }
@@ -113,7 +113,7 @@ impl Room {
 
     async fn send_message_history(&mut self, message_session: &mut MessageSession) -> Result<()> {
         let mut messages = self.messages.clone();
-        messages.sort_by(|a, b| a.sent_at().cmp(b.sent_at()));
+        messages.sort_by(|a, b| a.sent_at.cmp(&b.sent_at));
 
         for message in messages {
             self.send_packet_or_disconnect(message_session, message.into())
@@ -125,20 +125,12 @@ impl Room {
     async fn notify_join(&mut self, message_session: &MessageSession) -> Result<()> {
         let join_packet = ServerPacket::create_user_joined(
             self.name.to_string(),
-            message_session.name().to_string(),
+            message_session.name.to_string(),
             Zoned::now(),
         );
 
         self.broadcast_packet(join_packet).await?;
         Ok(())
-    }
-
-    pub fn name(&self) -> &String {
-        &self.name
-    }
-
-    pub fn created_at(&self) -> &Zoned {
-        &self.created_at
     }
 
     pub fn session_count(&self) -> usize {
