@@ -4,6 +4,7 @@ import com.rafaelrain.chatmessage.common.packet.ServerMessageSessionPacket
 import com.rafaelrain.chatmessage.sdk.session.MessageSession
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.websocket.webSocketSession
+import io.ktor.http.URLProtocol
 import io.ktor.websocket.Frame
 import io.ktor.websocket.readText
 import kotlinx.coroutines.CoroutineScope
@@ -16,6 +17,7 @@ import kotlinx.serialization.json.Json
 
 class MessageSessionClientAdapter(
     private val httpClient: HttpClient,
+    private val urlProtocol: URLProtocol,
     private val host: String,
     private val port: Int,
 ) : MessageSessionClient {
@@ -30,7 +32,7 @@ class MessageSessionClientAdapter(
             val room = createSessionRequest.roomName
             val websocketSession =
                 httpClient
-                    .webSocketSession(urlString = "wss://$host:$port/messages?name=$name&room=$room")
+                    .webSocketSession(urlString = "${urlProtocol.name}://$host:$port/messages?name=$name&room=$room")
 
             launch {
                 session.listenClientPackets {

@@ -31,6 +31,10 @@ class MessageRoomScreenModel(
 
     fun handleSend() =
         screenModelScope.launch {
+            if (state.value.message.isBlank()) {
+                return@launch
+            }
+
             state.value.messageSession?.emitClientPacket(
                 ClientMessageSessionPacket(
                     type = ClientMessageSessionPacketType.MESSAGE,
