@@ -9,9 +9,9 @@ pub async fn list_rooms_handler(
 ) -> Result<axum::Json<Vec<RoomDTO>>, ServerError> {
     let room_data_list = state.room_storage.list_rooms().await?;
 
-    let room_dto_list: Vec<RoomDTO> = room_data_list
+    let room_dto_list = room_data_list
         .iter()
-        .map(|room_data| RoomDTO::from(room_data))
+        .map(From::from)
         .collect();
 
     Ok(axum::Json(room_dto_list))
