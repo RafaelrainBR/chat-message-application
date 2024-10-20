@@ -5,6 +5,7 @@ use crate::error::Error::BlankMessageError;
 use anyhow::Result;
 use jiff::Zoned;
 
+use futures::future::join_all;
 use std::collections::HashMap;
 
 pub struct Room {
@@ -39,7 +40,7 @@ impl Room {
         self.sessions.remove(&sender_name);
 
         let leave_packet =
-            ServerPacket::create_user_left(self.name.to_string(), sender_name, jiff::Zoned::now());
+            ServerPacket::create_user_left(self.name.to_string(), sender_name, Zoned::now());
 
         self.broadcast_packet(leave_packet).await?;
         Ok(())
@@ -81,18 +82,19 @@ impl Room {
     }
 
     async fn broadcast_packet(&self, packet: ServerPacket) -> Result<()> {
-        for session in self.sessions.values() {
-            session
-                .send_packet(packet.clone())
-                .await
-                .unwrap_or_else(|err| {
+        let _ = join_all(self.sessions.values().map(|session| {
+            let packet = packet.clone();
+            async move {
+                session.send_packet(packet).await.unwrap_or_else(|err| {
                     tracing::trace!(
                         "Error sending packet for session {}: {:?}",
                         session.name,
                         err
                     );
                 });
-        }
+            }
+        }))
+        .await;
 
         Ok(())
     }
