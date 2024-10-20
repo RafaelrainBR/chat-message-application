@@ -1,0 +1,35 @@
+# fly.toml app configuration file generated for application-ktor on 2024-06-13T22:23:50-03:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'application-ktor'
+primary_region = 'gru'
+
+[build]
+dockerfile = "Dockerfile"
+
+[[services]]
+internal_port = 3000
+
+[services.concurrency]
+hard_limit = 100
+soft_limit = 75
+
+[[services.ports]]
+handlers = ["http"]
+port = 80
+
+[[services.ports]]
+handlers = ["tls", "http"]
+port = 443
+
+[[services.tcp_checks]]
+interval = 10000
+timeout = 2000
+
+[[vm]]
+size = 'shared-cpu-1x'
+
+[env]
+TZ = "America/Sao_Paulo"

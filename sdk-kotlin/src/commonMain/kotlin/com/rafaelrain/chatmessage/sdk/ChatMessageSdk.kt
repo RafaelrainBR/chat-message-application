@@ -7,6 +7,7 @@ import com.rafaelrain.chatmessage.sdk.client.RoomsClientAdapter
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.websocket.WebSockets
+import io.ktor.http.URLProtocol
 import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
@@ -20,12 +21,14 @@ class ChatMessageSdk private constructor(
             apiUrl: String,
             webSocketHost: String,
             webSocketPort: Int,
+            urlProtocol: URLProtocol = URLProtocol.WSS,
         ): ChatMessageSdk {
             val httpClient = createHttpClient()
 
             val messageSessionClient =
                 MessageSessionClientAdapter(
                     httpClient = httpClient,
+                    urlProtocol = urlProtocol,
                     host = webSocketHost,
                     port = webSocketPort,
                 )
