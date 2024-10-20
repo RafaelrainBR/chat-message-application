@@ -1,30 +1,14 @@
-FROM rust:1 AS builder
-
-# create a new empty project
-RUN USER=root cargo new --bin app
+FROM rust:1 as build-env
 WORKDIR /app
-
-# copy over your manifests
-COPY ./Cargo.lock ./Cargo.lock
-COPY ./Cargo.toml ./Cargo.toml
-
-# this build step will cache your dependencies
-RUN cargo build --release
-RUN rm src/*.rs
-
-# copy your source tree
-COPY ./src ./src
-
-# build for release
+COPY . /app
 RUN cargo build --release
 
-FROM rust:1-alpine
+FROM gcr.io/distroless/cc-debian12
 
-WORKDIR /app
-COPY --from=builder /app/target/release/chat-message-application-backend-rust /app/app
+COPY --from=build-env /app/target/release/chat-message-application-backend-rust /
 
 EXPOSE 3000
 
 ENV TZ="America/Sao_Paulo"
 
-CMD ["/app/app"]
+CMD ["./chat-message-application-backend-rust"]
